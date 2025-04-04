@@ -1,13 +1,14 @@
 """ module docstring """
 import datetime as dt
 import requests
+import json
 
 
 # const to be added to configure
 API_TIMEOUT = 600
 
 # added to invisible configure file
-API_TOKEN = ''
+API_TOKEN = '934ed99db195406824f02e28f72dc7738d8f7f10'
 
 def end_of_day_url(ticker: str, token: str, start: dt.date=None, end: dt.date=None, freq: str=None):
     """docstring"""
@@ -30,7 +31,7 @@ def get_end_of_day(ticker: str, token: str, start: dt.date=None, end: dt.date=No
     """docstring"""
 
     # create url
-    url = end_of_day_url(ticker, token, start, end)
+    url = end_of_day_url(ticker, token, start, end, freq)
 
     # call api
     response = requests.get(url, timeout=API_TIMEOUT)
@@ -41,9 +42,10 @@ def get_end_of_day(ticker: str, token: str, start: dt.date=None, end: dt.date=No
 
     return response.json()
 
-s = dt.date(1999, 8, 24)
-e = dt.date(2025, 4, 1)
-# print('somethingelse' + f"&startDate={s.year}-{s.month}-{s.day}")
-#print(s)
-#print(e)
-print(get_end_of_day("voo", API_TOKEN, end = e))
+data = get_end_of_day("voo", API_TOKEN)
+print(data)
+with open('data.json', 'w') as json_file:
+    json_file.write(str(data))
+
+
+
