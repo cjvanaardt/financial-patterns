@@ -1,7 +1,10 @@
 """ module docstring """
 from typing import List, Dict
+from pyspark.sql import SparkSession
+import pyspark.sql as ps
 import datetime as dt
 import requests
+
 
 
 
@@ -10,6 +13,8 @@ API_TIMEOUT = 600
 
 # added to invisible configure file
 API_TOKEN = '934ed99db195406824f02e28f72dc7738d8f7f10'
+
+STORAGE_ACCOUNT = "stfinancialpatterns01"
 
 def genereate_tiingo_eod_url(ticker: str, token: str, start: dt.date=None, end: dt.date=None, freq: str=None) -> str:
     """Generates url for Tiingo API to get EOD data for stock defined by ticker
@@ -83,6 +88,7 @@ def call_api(url: str, timeout: int=API_TIMEOUT) -> requests.Response:
 
     return response
 
+
 def get_tiingo_eod(ticker: str, token: str, start: dt.date=None, end: dt.date=None, freq: str=None) -> List[Dict]:
     """Call Tiingo API for EOD data for stock defined by ticker and returns it in json format.
 
@@ -102,7 +108,7 @@ def get_tiingo_eod(ticker: str, token: str, start: dt.date=None, end: dt.date=No
     Returns
     -------
     List[Dict]
-        A list of dictionaries with each dictionary representing a single Tiingo EOD period
+        A list of dictionaries with each dictionary containing data representing a single EOD period
     
     Raises
     ------
@@ -120,9 +126,59 @@ def get_tiingo_eod(ticker: str, token: str, start: dt.date=None, end: dt.date=No
 
     return response.json()
 
-# Next create this function.
-# -> Import pyspark and use it's structures!! Easy
-def save_to_adls(df: , path)
+
+def save_tiingo_to_adls(ticker: str, token: str, fmt: str, storage_account : str, container: str, path: str, start: dt.date=None, end: dt.date=None, freq: str=None) -> None:
+    """Call Tiingo API for EOD data for stock defined by ticker and saves it to adls in format into the specified storage_account, container and path.
+    
+    Parameters
+    ----------
+    ticker : str 
+        ticker for the stock you want to get EOD data for
+    token : str
+        Tiingo API token
+    fmt : str
+        The format the data will be saved as.
+    storage_account : str
+        The storage account the data will be saved into.
+    container : str
+        The container the data will be saved into.
+    path : str
+        Path the data will be saved into.
+    start : dt.date, optional
+        If specified url will query historical data on and after the given date
+    end : dt.date, optional
+        If specified url will query historical data on and before the given date
+    freq : str, optional
+        specifies the frequency of the value returned (daily, weekly, monthly, annually)
+
+    Return
+    ------
+    None
+
+    Raises
+    ------
+    RuntimeError
+        When the Tiingo API request response status code is not 200 (unsuccessful)
+    TimeoutError
+        When the API timeout limit is reached
+    """
+    # get Tiingo data
+    data = get_tiingo_eod(ticker, token, start, end, freq)
+
+    # get spark session
+    spark = SparkSession.builder.getOrCreate()
+
+    # transform data to dataframe
+    df = spark.createDataFrame(data)
+
+    # save dataframe to adls
+    df.write.format(fmt).save(f"abfss://{container}@{storage_account}.dfs.core.windows.net{path}")
+
+# Thing that pulls Tiingo data and
+
+
+# transform to dataframe
+# def save_to_adls(df: , path)
 # generalise. Don't have to make it json. Make it general.
 
 # make a save to adls function to desired location
@@ -138,37 +194,9 @@ def save_to_adls(df: , path)
 # - Make ticker customisable
 # - Make location in adls customisable.
 
-def save_tiingo_eod_adls(ticker: str, file_path: str, format: str, token : str) -> None:
-    """
-    Saves EOD data for stock defined by ticker to file_path 
-    in adls using format collected using Tiingo API 
-
-    Parameters
-    ----------
-    ticker : string
-        ticker of stock whose data you want to save
-    file_path : string
-        file path you want data to be saved inside adls
-    format : string
-        format data will be saved as in adls
-    token : string
-        Tiingo API token
-
-    Returns
-    -------
-    None
-
-    Raises
-    ------
-    RuntimeError
-        when API call response is not 200 (successful)
-    """
-    # call API
-    # data = 
-
     
 
-data = get_tiingo_eod("voo", API_TOKEN)
-print(data)
-with open('../../../data/bronze/data.json', 'w') as json_file:
-    json_file.write(str(data))
+# data = get_tiingo_eod("voo", API_TOKEN)
+# print(data)
+# with open('../../../data/bronze/data.json', 'w') as json_file:
+#    json_file.write(str(data))
