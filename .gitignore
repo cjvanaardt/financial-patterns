@@ -3,5 +3,4 @@ data/
 test*
 __pycache__
 .pytest_cache
-requirements.txt
 comments.txt
