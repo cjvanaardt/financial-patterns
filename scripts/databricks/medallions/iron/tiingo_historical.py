@@ -2,7 +2,7 @@ import sys, os, const
 import datetime as dt
 
 # import from financial-patterns module
-sys.path.append(os.path.abspath(const.MODULE_PATH))
+sys.path.append(os.path.abspath(sensitive.MODULE_PATH))
 
 import src.medallions.iron.iron as i
 import sensitive
