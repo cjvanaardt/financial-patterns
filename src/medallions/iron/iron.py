@@ -1,11 +1,8 @@
 """ module docstring """
 from typing import List, Dict
-from pyspark.sql import SparkSession
-import pyspark.sql as ps
 import datetime as dt
+from pyspark.sql import SparkSession
 import requests
-
-
 
 
 # const to be added to configure
@@ -127,7 +124,7 @@ def get_tiingo_eod(ticker: str, token: str, start: dt.date=None, end: dt.date=No
     return response.json()
 
 
-def save_tiingo_to_adls(ticker: str, token: str, fmt: str, storage_account : str, container: str, path: str, start: dt.date=None, end: dt.date=None, freq: str=None) -> None:
+def save_tiingo_to_adls(ticker: str, token: str, fmt: str, storage_account : str, storage_key : str, container: str, path: str, start: dt.date=None, end: dt.date=None, freq: str=None) -> None:
     """Call Tiingo API for EOD data for stock defined by ticker and saves it to adls in format into the specified storage_account, container and path.
     
     Parameters
@@ -140,6 +137,8 @@ def save_tiingo_to_adls(ticker: str, token: str, fmt: str, storage_account : str
         The format the data will be saved as.
     storage_account : str
         The storage account the data will be saved into.
+    storage_key : str
+        A storage account key to access storage_account.
     container : str
         The container the data will be saved into.
     path : str
@@ -170,6 +169,9 @@ def save_tiingo_to_adls(ticker: str, token: str, fmt: str, storage_account : str
 
     # transform data to dataframe
     df = spark.createDataFrame(data)
+
+    # set the configuration for the storage account
+    spark.conf.set(f"fs.azure.account.key.{storage_account}.dfs.core.windows.net", storage_key)
 
     # save dataframe to adls
     df.write.format(fmt).save(f"abfss://{container}@{storage_account}.dfs.core.windows.net{path}")
