@@ -1,8 +1,9 @@
+"""module docstring"""
 # tickers for which new data will be pulled each day
-TICKERS = ["voo"]
+DAILY_TICKERS = ["voo"]
 
 # tickers for which we will pull historical data
-HIST_TICKERS = []
+HIST_TICKERS = ["voo"]
 
 # date which we will pull historical data from
 HIST_DATE_YEAR = 2000

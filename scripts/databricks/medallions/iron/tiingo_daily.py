@@ -14,7 +14,7 @@ import sensitive
 today = dt.datetime.now()
 
 # save data
-for ticker in const.TICKERS:
+for ticker in const.DAILY_TICKERS:
     i.save_tiingo_to_adls(
     ticker,
     sensitive.TIINGO_API_TOKEN,
