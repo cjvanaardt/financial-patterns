@@ -8,11 +8,6 @@ import requests
 # const to be added to configure
 API_TIMEOUT = 600
 
-# added to invisible configure file
-API_TOKEN = '934ed99db195406824f02e28f72dc7738d8f7f10'
-
-STORAGE_ACCOUNT = "stfinancialpatterns01"
-
 def genereate_tiingo_eod_url(ticker: str, token: str, start: dt.date=None, end: dt.date=None, freq: str=None) -> str:
     """Generates url for Tiingo API to get EOD data for stock defined by ticker
 

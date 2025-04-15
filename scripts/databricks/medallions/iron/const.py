@@ -12,6 +12,9 @@ HIST_DATE_DAY = 1
 # storage file we will use
 STORAGE_FILE = "parquet"
 
+# financial-patterns file location
+MODULE_PATH = "/Workspace/Repos/christiaanvanaardt@hotmail.com/financial-patterns/"
+
 # storage account
 STORAGE_ACCOUNT = "stfinancialpatterns01"
 
