@@ -1,14 +1,29 @@
-""" module docstring """
+"""functions which are used to pull data in their raw state into the bronze layer of azure data lake
+service"""
+
+import sys
+import os
 from typing import List, Dict
 import datetime as dt
 from pyspark.sql import SparkSession
 import requests
 
+sys.path.append(
+    os.path.abspath(
+        "/Workspace/Repos/christiaanvanaardt@hotmail.com/financial-patterns/"
+    )
+)
 
-# const to be added to configure
-API_TIMEOUT = 600
+import const
 
-def genereate_tiingo_eod_url(ticker: str, token: str, start: dt.date=None, end: dt.date=None, freq: str=None) -> str:
+
+def genereate_tiingo_eod_url(
+    ticker: str,
+    token: str,
+    start: dt.date = None,
+    end: dt.date = None,
+    freq: str = None,
+) -> str:
     """Generates url for Tiingo API to get EOD data for stock defined by ticker
 
     Parameters
@@ -41,20 +56,21 @@ def genereate_tiingo_eod_url(ticker: str, token: str, start: dt.date=None, end: 
         url += f"&resampleFreq={freq}"
 
     # add API token to the end
-    if (start or end or freq):
+    if start or end or freq:
         url += f"&token={token}"
     else:
         url += f"token={token}"
 
     return url
 
-def call_api(url: str, timeout: int=API_TIMEOUT) -> requests.Response:
+
+def call_api(url: str, timeout: int = const.API_TIMEOUT) -> requests.Response:
     """Executes a get request on url, returning a reponse if successful
     or throwing an error if unsuccessful or timeout limit is reached.
 
     Parameters
     ----------
-    url : str 
+    url : str
         url which the request will try to get.
     timeout : int, optional
         Number of seconds the request will timeout after.
@@ -81,12 +97,18 @@ def call_api(url: str, timeout: int=API_TIMEOUT) -> requests.Response:
     return response
 
 
-def get_tiingo_eod(ticker: str, token: str, start: dt.date=None, end: dt.date=None, freq: str=None) -> List[Dict]:
+def get_tiingo_eod(
+    ticker: str,
+    token: str,
+    start: dt.date = None,
+    end: dt.date = None,
+    freq: str = None,
+) -> List[Dict]:
     """Call Tiingo API for EOD data for stock defined by ticker and returns it in json format.
 
     Parameters
     ----------
-    ticker : str 
+    ticker : str
         ticker for the stock you want to get EOD data for
     token : str
         Tiingo API token
@@ -101,7 +123,7 @@ def get_tiingo_eod(ticker: str, token: str, start: dt.date=None, end: dt.date=No
     -------
     List[Dict]
         A list of dictionaries with each dictionary containing data representing a single EOD period
-    
+
     Raises
     ------
     RuntimeError
@@ -119,12 +141,23 @@ def get_tiingo_eod(ticker: str, token: str, start: dt.date=None, end: dt.date=No
     return response.json()
 
 
-def save_tiingo_to_adls(ticker: str, token: str, fmt: str, storage_account : str, storage_key : str, container: str, path: str, start: dt.date=None, end: dt.date=None, freq: str=None) -> None:
+def save_tiingo_to_adls(
+    ticker: str,
+    token: str,
+    fmt: str,
+    storage_account: str,
+    storage_key: str,
+    container: str,
+    path: str,
+    start: dt.date = None,
+    end: dt.date = None,
+    freq: str = None,
+) -> None:
     """Call Tiingo API for EOD data for stock defined by ticker and saves it to adls in format into the specified storage_account, container and path.
-    
+
     Parameters
     ----------
-    ticker : str 
+    ticker : str
         ticker for the stock you want to get EOD data for
     token : str
         Tiingo API token
@@ -166,34 +199,11 @@ def save_tiingo_to_adls(ticker: str, token: str, fmt: str, storage_account : str
     df = spark.createDataFrame(data)
 
     # set the configuration for the storage account
-    spark.conf.set(f"fs.azure.account.key.{storage_account}.dfs.core.windows.net", storage_key)
+    spark.conf.set(
+        f"fs.azure.account.key.{storage_account}.dfs.core.windows.net", storage_key
+    )
 
     # save dataframe to adls
-    df.write.format(fmt).save(f"abfss://{container}@{storage_account}.dfs.core.windows.net{path}")
-
-# Thing that pulls Tiingo data and
-
-
-# transform to dataframe
-# def save_to_adls(df: , path)
-# generalise. Don't have to make it json. Make it general.
-
-# make a save to adls function to desired location
-
-# Then create function that calls Tiingo and saves to adls with params
-# ticker
-# What steps are required?
-# 1. Call API
-# - Calling API will be it's own function. Other two steps can exit by itself.
-# 2. Convert JSON to dataframe
-# 3. Save dataframe to correct file in adls
-# What are other requirements?
-# - Make ticker customisable
-# - Make location in adls customisable.
-
-    
-
-# data = get_tiingo_eod("voo", API_TOKEN)
-# print(data)
-# with open('../../../data/bronze/data.json', 'w') as json_file:
-#    json_file.write(str(data))
+    df.write.format(fmt).save(
+        f"abfss://{container}@{storage_account}.dfs.core.windows.net{path}"
+    )
