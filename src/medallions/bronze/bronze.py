@@ -18,13 +18,16 @@ def clean_tiingo_eod(df: ps.DataFrame) -> ps.DataFrame:
     pyspark DataFrame
         A new pyspark DataFrame with reformatted date column and duplicte rows removed.
     """
+    # create a copy
+    dataframe = df.select('*')
+
     # reformat the dataframe date column
-    df = df.withColumn("date", fs.substring(fs.col("date"), 0, 10)).copy()
+    dataframe = dataframe.withColumn("date", fs.substring(fs.col("date"), 0, 10))
 
     # drop duplicates
-    df = df.dropDuplicates()
+    dataframe = dataframe.dropDuplicates()
 
-    return df
+    return dataframe
 
 
 def check_tiingo_eod_missing(df: ps.DataFrame) -> None:
