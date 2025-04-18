@@ -27,13 +27,13 @@ def aggregate_tiingo_eod(df: ps.DataFrame) -> ps.DataFrame:
     first_date = first_row["date"]
     # first_row.__getitem__("date")
 
-    start = dt.datetime(first_date[0:4], first_date[5:7], first_date[8:10])
+    start = dt.datetime(int(first_date[0:4]), int(first_date[5:7]), int(first_date[8:10]))
 
     # create new column based on days from the earliest row
 
     dataframe.withColumn("date",
-                         (dt.datetime(fs.col("date")[0:4],
-                                      fs.col("date")[5:7],
-                                       fs.col("date")[8:10]) - start).days)
+                         (dt.datetime(int(fs.col("date")[0:4]),
+                                      int(fs.col("date")[5:7]),
+                                       int(fs.col("date")[8:10])) - start).days)
 
     return dataframe
