@@ -27,7 +27,7 @@ spark.conf.set(
 )
 
 
-for ticker in const.HIST_TICKERS:
+for ticker in const.DAILY_TICKERS:
     # define the load and save path
     HISTORIC_PATH_END = f"/Tiingo_EOD/{ticker}/historical/"
     HISTORIC_LOAD_PATH = f"abfss://{
@@ -36,9 +36,6 @@ for ticker in const.HIST_TICKERS:
     DAILY_PATH_END = f"/Tiingo_EOD/{ticker}/*/*/*"
     DAILY_LOAD_PATH = f"abfss://{
         const.BRONZE_CONTAINER}@{const.STORAGE_ACCOUNT}.dfs.core.windows.net{DAILY_PATH_END}"
-
-    SAVE_PATH = f"abfss://{
-        const.SILVER_CONTAINER}@{const.STORAGE_ACCOUNT}.dfs.core.windows.net{HISTORIC_PATH_END}"
 
     # load in the data
     historic = spark.read.format(const.STORAGE_FORMAT).load(HISTORIC_LOAD_PATH)
@@ -53,5 +50,9 @@ for ticker in const.HIST_TICKERS:
     # clean the data
     cleaned_dataframe = b.clean_tiingo_eod(dataframe)
 
-    # save to new location
+    # save to silver layer
+    SAVE_PATH_END = f"/Tiingo_EOD/{ticker}"
+    SAVE_PATH = f"abfss://{
+        const.SILVER_CONTAINER}@{const.STORAGE_ACCOUNT}.dfs.core.windows.net{SAVE_PATH_END}"
+
     cleaned_dataframe.write.format(const.STORAGE_FORMAT).save(SAVE_PATH)
