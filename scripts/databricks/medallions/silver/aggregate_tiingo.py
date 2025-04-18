@@ -39,4 +39,4 @@ for ticker in const.DAILY_TICKERS:
     SAVE_PATH = f"abfss://{
         const.GOLD_CONTAINER}@{const.STORAGE_ACCOUNT}.dfs.core.windows.net{SAVE_PATH_END}"
 
-    data.write.format(const.STORAGE_FORMAT).save(SAVE_PATH)
+    data.write.format(const.STORAGE_FORMAT).mode('overwrite').save(SAVE_PATH)

@@ -21,19 +21,17 @@ def aggregate_tiingo_eod(df: ps.DataFrame) -> ps.DataFrame:
     # create copy of the dataframe
     dataframe = df.select('*')
 
-    # get the first date in the dataframe
-    first_row = dataframe.sort("date", ascending=True).first()
-
-    first_date = first_row["date"]
-    # first_row.__getitem__("date")
+     # get the first date in the dataframe
+    first_date = dataframe.agg({"date": "min"}).collect()[0][0]
 
     start = dt.datetime(int(first_date[0:4]), int(first_date[5:7]), int(first_date[8:10]))
 
-    # create new column based on days from the earliest row
-
-    dataframe.withColumn("date",
-                         (dt.datetime(int(fs.col("date")[0:4]),
-                                      int(fs.col("date")[5:7]),
-                                       int(fs.col("date")[8:10])) - start).days)
-
+    # add new column
+    dataframe = dataframe.withColumn(
+        "date_diff",
+        fs.datediff(
+            fs.col("date"),
+            fs.lit(start)
+        )
+    )
     return dataframe
