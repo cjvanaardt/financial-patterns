@@ -9,15 +9,13 @@ from pyspark.sql import SparkSession
 import requests
 
 sys.path.append(
-    os.path.abspath(
-        "/Workspace/Repos/christiaanvanaardt@hotmail.com/financial-patterns/"
-    )
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 )
 
 import const
 
 
-def genereate_tiingo_eod_url(
+def generate_tiingo_eod_url(
     ticker: str,
     token: str,
     start: dt.date = None,
@@ -56,10 +54,7 @@ def genereate_tiingo_eod_url(
         url += f"&resampleFreq={freq}"
 
     # add API token to the end
-    if start or end or freq:
-        url += f"&token={token}"
-    else:
-        url += f"token={token}"
+    url += f"&token={token}"
 
     return url
 
@@ -133,7 +128,7 @@ def get_tiingo_eod(
 
     """
     # create url
-    url = genereate_tiingo_eod_url(ticker, token, start, end, freq)
+    url = generate_tiingo_eod_url(ticker, token, start, end, freq)
 
     # call api
     response = call_api(url)
