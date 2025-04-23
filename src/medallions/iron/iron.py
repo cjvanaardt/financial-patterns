@@ -59,39 +59,6 @@ def generate_tiingo_eod_url(
     return url
 
 
-def call_api(url: str, timeout: int = const.API_TIMEOUT) -> requests.Response:
-    """Executes a get request on url, returning a reponse if successful
-    or throwing an error if unsuccessful or timeout limit is reached.
-
-    Parameters
-    ----------
-    url : str
-        url which the request will try to get.
-    timeout : int, optional
-        Number of seconds the request will timeout after.
-
-    Returns
-    -------
-    requests.Response
-        If sucessful returns a requests.Reponse object
-
-    Raises
-    ------
-    RuntimeError
-        When the request response status code is not 200 (unsuccessful)
-    TimeoutError
-        When the timeout limit is reached
-    """
-    # get url
-    response = requests.get(url, timeout=timeout)
-
-    # if status code is not 200 raise RuntimeError
-    if response.status_code != 200:
-        raise RuntimeError(f"API Error. Status code: {response.status_code}")
-
-    return response
-
-
 def get_tiingo_eod(
     ticker: str,
     token: str,
@@ -121,7 +88,7 @@ def get_tiingo_eod(
 
     Raises
     ------
-    RuntimeError
+    ValueError
         When the Tiingo API request response status code is not 200 (unsuccessful)
     TimeoutError
         When the API timeout limit is reached
@@ -131,7 +98,11 @@ def get_tiingo_eod(
     url = generate_tiingo_eod_url(ticker, token, start, end, freq)
 
     # call api
-    response = call_api(url)
+    response = requests.get(url, timeout=const.API_TIMEOUT)
+
+    # if status code is not 200 raise ValueError
+    if response.status_code != 200:
+        raise ValueError(f"API Error. Status code: {response.status_code}")
 
     return response.json()
 
@@ -179,7 +150,7 @@ def save_tiingo_to_adls(
 
     Raises
     ------
-    RuntimeError
+    ValueError
         When the Tiingo API request response status code is not 200 (unsuccessful)
     TimeoutError
         When the API timeout limit is reached
