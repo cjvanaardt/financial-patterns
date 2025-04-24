@@ -48,7 +48,7 @@ for ticker in const.DAILY_TICKERS:
     b.check_tiingo_eod_missing(dataframe)
 
     # clean the data
-    cleaned_dataframe = b.clean_tiingo_eod(dataframe)
+    cleaned_dataframe = b.reformat_tiingo_eod_date(dataframe)
 
     # save to silver layer
     SAVE_PATH_END = f"/Tiingo_EOD/{ticker}"

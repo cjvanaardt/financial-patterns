@@ -4,7 +4,7 @@ import pyspark.sql.functions as fs
 import pyspark.sql as ps
 
 
-def clean_tiingo_eod(df: ps.DataFrame) -> ps.DataFrame:
+def reformat_tiingo_eod_date(df: ps.DataFrame) -> ps.DataFrame:
     """Takes a pyspark DataFrame created from the Tiingo EOD API call, reformats the date column and
     removes any duplciate rows.
 
@@ -45,7 +45,7 @@ def check_tiingo_eod_missing(df: ps.DataFrame) -> None:
 
     Raises
     ------
-    RuntimeError
+    ValueError
         When there are any Null or NAN values in the DataFrame.
     """
     # calculate the number of missing (null or nan) values
@@ -56,4 +56,4 @@ def check_tiingo_eod_missing(df: ps.DataFrame) -> None:
 
     # raise an error if any are found
     if num_missing:
-        raise RuntimeError
+        raise ValueError
