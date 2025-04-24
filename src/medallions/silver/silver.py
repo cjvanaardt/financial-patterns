@@ -28,7 +28,7 @@ def aggregate_tiingo_eod(df: ps.DataFrame) -> ps.DataFrame:
 
     # add new column
     dataframe = dataframe.withColumn(
-        "date_diff",
+        "days",
         fs.datediff(
             fs.col("date"),
             fs.lit(start)
