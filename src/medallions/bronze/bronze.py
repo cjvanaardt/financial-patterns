@@ -4,9 +4,12 @@ import pyspark.sql.functions as fs
 import pyspark.sql as ps
 
 
-def reformat_tiingo_eod_date(df: ps.DataFrame) -> ps.DataFrame:
-    """Takes a pyspark DataFrame created from the Tiingo EOD API call, reformats the date column and
-    removes any duplciate rows.
+def reformat_tiingo_eod(df: ps.DataFrame) -> ps.DataFrame:
+    """Takes a pyspark DataFrame created from the Tiingo EOD API call and 
+    - reformats the date column
+    - removes any duplicate rows
+    - drops unecessary columns
+    - renames columns
 
     Parameters
     ----------
@@ -16,7 +19,7 @@ def reformat_tiingo_eod_date(df: ps.DataFrame) -> ps.DataFrame:
     Return
     ------
     pyspark DataFrame
-        A new pyspark DataFrame with reformatted date column and duplicte rows removed.
+        A new reformatted pyspark DataFrame.
     """
     # create a copy
     dataframe = df.select('*')
@@ -27,8 +30,18 @@ def reformat_tiingo_eod_date(df: ps.DataFrame) -> ps.DataFrame:
     # drop duplicates
     dataframe = dataframe.dropDuplicates()
 
-    return dataframe
+    # drop columns 
+    dataframe = dataframe.drop(*['close', 'high', 'low', 'open',
+                                 'volume'])
+    
+    # rename columns
+    dataframe = dataframe.withColumnRenamed("adjClose", "close")
+    dataframe = dataframe.withColumnRenamed("adjHigh", "high")
+    dataframe = dataframe.withColumnRenamed("adjLow", "low")
+    dataframe = dataframe.withColumnRenamed("adjOpen", "open")
+    dataframe = dataframe.withColumnRenamed("adjVolume", "close")
 
+    return dataframe
 
 def check_tiingo_eod_missing(df: ps.DataFrame) -> None:
     """Takes a pyspark dataframe created from a Tiingo EOD API call and raises an error if there are

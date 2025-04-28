@@ -170,6 +170,6 @@ def save_tiingo_to_adls(
     )
 
     # save dataframe to adls
-    df.write.format(fmt).save(
+    df.write.format(fmt).mode('overwrite').save(
         f"abfss://{container}@{storage_account}.dfs.core.windows.net{path}"
     )

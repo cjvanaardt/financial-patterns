@@ -44,7 +44,7 @@ for ticker in const.DAILY_TICKERS:
     b.check_tiingo_eod_missing(dataframe)
 
     # clean the data
-    cleaned_dataframe = b.clean_tiingo_eod(dataframe)
+    cleaned_dataframe = b.reformat_tiingo_eod(dataframe)
 
     # save to new location
     cleaned_dataframe.write.format(const.STORAGE_FORMAT).save(SAVE_PATH)
