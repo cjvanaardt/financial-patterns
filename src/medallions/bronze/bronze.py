@@ -33,13 +33,13 @@ def reformat_tiingo_eod(df: ps.DataFrame) -> ps.DataFrame:
     # drop columns 
     dataframe = dataframe.drop(*['close', 'high', 'low', 'open',
                                  'volume'])
-    
+
     # rename columns
     dataframe = dataframe.withColumnRenamed("adjClose", "close")
     dataframe = dataframe.withColumnRenamed("adjHigh", "high")
     dataframe = dataframe.withColumnRenamed("adjLow", "low")
     dataframe = dataframe.withColumnRenamed("adjOpen", "open")
-    dataframe = dataframe.withColumnRenamed("adjVolume", "close")
+    dataframe = dataframe.withColumnRenamed("adjVolume", "volume")
 
     return dataframe
 

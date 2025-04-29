@@ -115,6 +115,7 @@ def save_tiingo_to_adls(
     storage_key: str,
     container: str,
     path: str,
+    mode: str = "overwrite",
     start: dt.date = None,
     end: dt.date = None,
     freq: str = None,
@@ -137,6 +138,8 @@ def save_tiingo_to_adls(
         The container the data will be saved into.
     path : str
         Path the data will be saved into.
+    mode : str
+        The mode which the file will be written with.
     start : dt.date, optional
         If specified url will query historical data on and after the given date
     end : dt.date, optional
@@ -170,6 +173,6 @@ def save_tiingo_to_adls(
     )
 
     # save dataframe to adls
-    df.write.format(fmt).mode('overwrite').save(
+    df.write.format(fmt).mode(mode).save(
         f"abfss://{container}@{storage_account}.dfs.core.windows.net{path}"
     )
