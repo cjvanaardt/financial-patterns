@@ -28,21 +28,12 @@ spark.conf.set(
 
 
 for ticker in const.DAILY_TICKERS:
-    # define the load and save path
-    HISTORIC_PATH_END = f"/Tiingo_EOD/{ticker}/historical/"
-    HISTORIC_LOAD_PATH = f"abfss://{
-        const.BRONZE_CONTAINER}@{const.STORAGE_ACCOUNT}.dfs.core.windows.net{HISTORIC_PATH_END}"
-
-    DAILY_PATH_END = f"/Tiingo_EOD/{ticker}/*/*/*"
-    DAILY_LOAD_PATH = f"abfss://{
-        const.BRONZE_CONTAINER}@{const.STORAGE_ACCOUNT}.dfs.core.windows.net{DAILY_PATH_END}"
-
-    # load in the data
-    historic = spark.read.format(const.STORAGE_FORMAT).load(HISTORIC_LOAD_PATH)
-    daily = spark.read.format(const.STORAGE_FORMAT).load(DAILY_LOAD_PATH)
+    LOAD_PATH_END = f"/Tiingo_EOD/{ticker}/"
+    LOAD_PATH = f"abfss://{
+        const.BRONZE_CONTAINER}@{const.STORAGE_ACCOUNT}.dfs.core.windows.net{LOAD_PATH_END}"
 
     # combine dataframes
-    dataframe = daily.union(historic)
+    dataframe = spark.read.format(const.STORAGE_FORMAT).load(LOAD_PATH)
 
     # check for missing data
     b.check_tiingo_eod_missing(dataframe)

@@ -115,7 +115,7 @@ def save_tiingo_to_adls(
     storage_key: str,
     container: str,
     path: str,
-    mode: str = "overwrite",
+    mode: str,
     start: dt.date = None,
     end: dt.date = None,
     freq: str = None,

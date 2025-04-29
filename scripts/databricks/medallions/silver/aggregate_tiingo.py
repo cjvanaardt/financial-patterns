@@ -34,9 +34,11 @@ for ticker in const.DAILY_TICKERS:
     # aggregate
     data = s.aggregate_tiingo_eod(data)
 
+    # add ticker as dataframe column
+    data.withColumn("ticker", ticker)
+
     # save data
-    SAVE_PATH_END = f"/Tiingo_EOD/{ticker}"
     SAVE_PATH = f"abfss://{
-        const.GOLD_CONTAINER}@{const.STORAGE_ACCOUNT}.dfs.core.windows.net{SAVE_PATH_END}"
+        const.GOLD_CONTAINER}@{const.STORAGE_ACCOUNT}.dfs.core.windows.net/Tiingo_EOD/"
 
     data.write.format(const.STORAGE_FORMAT).mode('overwrite').save(SAVE_PATH)
