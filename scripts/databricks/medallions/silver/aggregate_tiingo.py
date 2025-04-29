@@ -2,7 +2,7 @@
 
 import sys
 import os
-from pyspark.sql import SparkSession
+import pyspark.sql as ps
 
 # import from financial-patterns module
 sys.path.append(
@@ -15,7 +15,7 @@ import src.medallions.silver.silver as s
 import const
 
 # get pyspark session
-spark = SparkSession.builder.getOrCreate()
+spark = ps.SparkSession.builder.getOrCreate()
 
 # set spark configuration
 spark.conf.set(
@@ -35,7 +35,7 @@ for ticker in const.DAILY_TICKERS:
     data = s.aggregate_tiingo_eod(data)
 
     # add ticker as dataframe column
-    data.withColumn("ticker", ticker)
+    data = data.withColumn("ticker", ps.functions.lit(ticker))
 
     # save data
     SAVE_PATH = f"abfss://{
