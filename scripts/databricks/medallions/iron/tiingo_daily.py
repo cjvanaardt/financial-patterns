@@ -21,5 +21,5 @@ for ticker in const.DAILY_TICKERS:
     const.STORAGE_ACCOUNT,
     const.STORAGE_ACCOUNT_KEY,
     const.BRONZE_CONTAINER,
-    f"/Tiingo_EOD/{ticker}/{today.year}/{today.month}/{today.day}/", 
+    f"/Tiingo_EOD/{ticker}/",
     "append")
